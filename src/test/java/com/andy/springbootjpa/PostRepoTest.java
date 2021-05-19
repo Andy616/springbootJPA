@@ -60,7 +60,7 @@ public class PostRepoTest {
 
     @Test
     public void testFindAllByUserId() {
-        List<Post> posts = postRepo.findAllByUserId(2);
+        List<Post> posts = postRepo.findAllByUserId(1);
         for (Post p : posts) {
             System.out.println(p.getContent());
             System.out.println(p.getPublishedOn());
@@ -81,6 +81,15 @@ public class PostRepoTest {
             System.out.println("--------------");
             System.out.println(post.getContent());
         }
+    }
+
+    @Test
+    public void testUpdatePost() {
+        Post post = postRepo.findById(1);
+        post.setContent("Test updating post.");
+        post.setLastUpdated(null);
+        postRepo.save(post);
+        assertThat(post.getPublishedOn().compareTo(post.getLastUpdated())).isNegative();
     }
 
 }
