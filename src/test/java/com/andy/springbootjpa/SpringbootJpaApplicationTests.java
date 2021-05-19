@@ -84,6 +84,4 @@ class SpringbootJpaApplicationTests {
                 .andReturn();
     }
 
-
-    // create sample data, delete repoTests
 }
