@@ -30,10 +30,11 @@ public class PostController {
         // todo: how to get user after login?
         // fields: content, user_id
         Post post = new Post();
-        post.setPublishedOn(postDTO.getPublishedOn());
+        post.setPublishedOn(null);
         long userId = Long.parseLong(postDTO.getUser_id());
         post.setUser(postService.getUser(userId));
         post.setContent(postDTO.getContent());
+        post.setLastUpdated(post.getPublishedOn());
         post = postService.save(post);
         return ResponseEntity.status(HttpStatus.OK).body(PostDTO.createDTO(post));
     }
