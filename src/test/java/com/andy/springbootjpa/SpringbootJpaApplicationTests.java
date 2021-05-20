@@ -1,5 +1,6 @@
 package com.andy.springbootjpa;
 
+import com.andy.springbootjpa.repo.PostRepo;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,9 @@ class SpringbootJpaApplicationTests {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private PostRepo postRepo;
 
     @Test
     public void createUser() throws Exception {
@@ -67,7 +71,8 @@ class SpringbootJpaApplicationTests {
 
     @Test
     public void deletePost() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/post/1")
+        String postId = Long.toString(postRepo.findAll().get(1).getId());
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/post/" + postId)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
