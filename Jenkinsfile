@@ -1,8 +1,5 @@
 node {
     def app
-    stage('Clone repository'){
-        checkout scm
-    }
 
     stage('Build and run Junit test') {
         sh 'mvn clean install'
