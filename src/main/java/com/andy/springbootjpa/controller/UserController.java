@@ -36,7 +36,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(UserDTO.createDTO(user));
     }
 
-    @PostMapping("/login")
+    @PostMapping("/login2")
     @ResponseBody
     public ResponseEntity<?> login(@RequestBody UserDTO userDTO) throws ResourceNotFoundException {
         // fields: email, password

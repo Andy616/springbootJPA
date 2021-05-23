@@ -1,6 +1,5 @@
 package com.andy.springbootjpa.model;
 
-//import org.hibernate.mapping.Set;
 import java.util.Set;
 
 import javax.persistence.*;

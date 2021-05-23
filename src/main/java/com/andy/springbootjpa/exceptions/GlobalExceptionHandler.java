@@ -19,9 +19,15 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(DuplicatedKeyException.class)
-    public ResponseEntity<?> DuplicatedKeyException(DuplicatedKeyException ex, WebRequest request){
+    public ResponseEntity<?> duplicatedKeyException(DuplicatedKeyException ex, WebRequest request){
         ErrorDetails errorDetails = new ErrorDetails(new Date(), ex.getMessage(), request.getDescription(false));
         return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(NotAuthorizedException.class)
+    public ResponseEntity<?> notAuthorizedException(NotAuthorizedException ex, WebRequest request){
+        ErrorDetails errorDetails = new ErrorDetails(new Date(), ex.getMessage(), request.getDescription(false));
+        return new ResponseEntity<>(errorDetails, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(Exception.class)

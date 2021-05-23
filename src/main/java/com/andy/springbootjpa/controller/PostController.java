@@ -1,13 +1,18 @@
 package com.andy.springbootjpa.controller;
 
 import com.andy.springbootjpa.dto.PostDTO;
+import com.andy.springbootjpa.exceptions.NotAuthorizedException;
 import com.andy.springbootjpa.exceptions.ResourceNotFoundException;
 import com.andy.springbootjpa.model.Post;
 import com.andy.springbootjpa.service.PostService;
+import com.andy.springbootjpa.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -23,15 +28,24 @@ public class PostController {
     @Autowired
     private PostService postService;
 
+    @Autowired
+    private UserService userService;
+
+
+    private Long getUserIdFromRequest() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = (User) auth.getPrincipal();
+        return userService.findByEmail(user.getUsername()).getId();
+    }
 
     @PostMapping("")
     @ResponseBody
     public ResponseEntity<?> publish(@RequestBody PostDTO postDTO) {
         // todo: how to get user after login?
-        // fields: content, user_id
+        // fields: content
         Post post = new Post();
         post.setPublishedOn(null);
-        long userId = Long.parseLong(postDTO.getUser_id());
+        long userId = getUserIdFromRequest();
         post.setUser(postService.getUser(userId));
         post.setContent(postDTO.getContent());
         post.setLastUpdated(post.getPublishedOn());
@@ -75,10 +89,14 @@ public class PostController {
 
     @PutMapping("/{id}")
     @ResponseBody
-    public ResponseEntity<?> updatePost(@PathVariable(value = "id") Long postId, @RequestBody PostDTO postDTO) throws ResourceNotFoundException {
+    public ResponseEntity<?> updatePost(@PathVariable(value = "id") Long postId, @RequestBody PostDTO postDTO)
+            throws ResourceNotFoundException, NotAuthorizedException {
         Post post = postService.getPostById(postId);
+        long userId = getUserIdFromRequest();
         if (post == null) {
             throw new ResourceNotFoundException("Post not found, id = " + postId);
+        } else if (userId != post.getUser().getId()) {
+            throw new NotAuthorizedException("Not authorized to do this operation");
         } else {
             post.setContent(postDTO.getContent());
             post.setLastUpdated(null);
@@ -90,10 +108,14 @@ public class PostController {
 
     @DeleteMapping("/{id}")
     @ResponseBody
-    public ResponseEntity<?> deletePost(@PathVariable(value = "id") Long postId) throws ResourceNotFoundException {
+    public ResponseEntity<?> deletePost(@PathVariable(value = "id") Long postId)
+            throws ResourceNotFoundException, NotAuthorizedException {
         Post post = postService.getPostById(postId);
+        long userId = getUserIdFromRequest();
         if (post == null) {
             throw new ResourceNotFoundException("Post not found, id = " + postId);
+        } else if (userId != post.getUser().getId()) {
+            throw new NotAuthorizedException("Not authorized to do this operation");
         } else {
             postService.deletePost(post);
             Map<String, Boolean> response = new HashMap<>();

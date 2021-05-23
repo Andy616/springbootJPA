@@ -1,0 +1,25 @@
+package com.andy.springbootjpa.security;
+
+import com.andy.springbootjpa.dto.ResponseDTO;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.AuthenticationEntryPoint;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+public class AuthEntryPoint implements AuthenticationEntryPoint {
+    @Override
+    public void commence(HttpServletRequest request,
+                         HttpServletResponse response,
+                         AuthenticationException authException) throws IOException, ServletException {
+
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+        ResponseDTO data = new ResponseDTO(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.name());
+        response.getOutputStream().println(new ObjectMapper().writeValueAsString(data));
+    }
+
+}
