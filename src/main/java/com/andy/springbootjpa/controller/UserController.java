@@ -3,7 +3,6 @@ package com.andy.springbootjpa.controller;
 
 import com.andy.springbootjpa.dto.UserDTO;
 import com.andy.springbootjpa.exceptions.DuplicatedKeyException;
-import com.andy.springbootjpa.exceptions.ResourceNotFoundException;
 import com.andy.springbootjpa.model.User;
 import com.andy.springbootjpa.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,21 +30,9 @@ public class UserController {
         try {
             user = userService.register(user);
         } catch (DataIntegrityViolationException e) {
-            throw new DuplicatedKeyException(e.getMessage() + "; Please check for duplicated keys.");
+            throw new DuplicatedKeyException("This email has already been taken.");
         }
         return ResponseEntity.status(HttpStatus.OK).body(UserDTO.createDTO(user));
-    }
-
-    @PostMapping("/login2")
-    @ResponseBody
-    public ResponseEntity<?> login(@RequestBody UserDTO userDTO) throws ResourceNotFoundException {
-        // fields: email, password
-        User user = userService.login(userDTO.getEmail(), userDTO.getPassword());
-        if (user == null) {
-            throw new ResourceNotFoundException("Email or Password incorrect!");
-        } else {
-            return ResponseEntity.status(HttpStatus.OK).body(UserDTO.createDTO(user));
-        }
     }
 
 }
